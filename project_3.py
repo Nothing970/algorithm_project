@@ -1,6 +1,8 @@
 import random
 import copy
 import pulp as pulp
+import matplotlib.pyplot as plt
+import time
 
 
 # 生成数据
@@ -54,8 +56,8 @@ def gene_data(data_size=100):
 
 
 # 贪心集合覆盖
-def greed_covers(data_size=100):
-    U, F = gene_data(data_size)
+def greedy_covers(U,F):
+    # U, F = gene_data(data_size)
     res = []
     union_C = []
     while len(U) > 0:
@@ -77,9 +79,9 @@ def greed_covers(data_size=100):
     return res
 
 
-def solve_ilp(obj, constraints):
+def solve_ilp(target, constraints):
     prob = pulp.LpProblem('LP1', pulp.LpMinimize)
-    prob += obj
+    prob += target
     for cons in constraints:
         prob += cons
     status = prob.solve()
@@ -88,20 +90,21 @@ def solve_ilp(obj, constraints):
         # print status
         return None
     else:
-        res = [None] * 100
+        res = [None] * len(target)
         for v in prob.variables():
             s = v.name
             i = eval(s[1:])
+
             res[i] = v.varValue
         return res
         # return [v.varValue for v in prob.variables()]
 
 
 # 通过线性规划进行求解
-def LP(data_size=100):
+def LP(U,F):
     # u为数据,F为集合
-    U, F = gene_data(data_size)
-    U = list(U);
+    # U, F = gene_data(data_size)
+    U = list(U)
     F = list(F)
 
     XS = []
@@ -117,46 +120,72 @@ def LP(data_size=100):
                 xs.append(0)
         XS.append(xs)
 
+    # 计算出元素出现的最大频率的倒数
     max_f = 1 / max([sum(item) for item in XS])
-    print(max_f)
+    print("元素出现的最大频率的倒数：",max_f)
     V_NUM = len(F)
-    print("V_NUM", V_NUM)
 
     # 生成变量
     variables = [pulp.LpVariable('X%d' % i, lowBound=0, cat=pulp.LpContinuous) for i in range(V_NUM)]
-    obj = pulp.lpSum([variables[i] for i in range(V_NUM)])
+    target = pulp.lpSum([variables[i] for i in range(V_NUM)])
 
     # 约束条件
     constraints = []
     for xs in XS:
         constraints.append(pulp.lpSum([xs[i] * variables[i] for i in range(V_NUM)]) >= 1.0)
+    #   求解问题
+    result = solve_ilp(target, constraints)
+    print(result)
 
-    # 求解
-    res = solve_ilp(obj, constraints)
+    # 检验每个条件都大于1
+    # t = []
+    # for xs in XS:
+    #     t.append(sum([xs[i] * result[i] for i in range(V_NUM)]))
+    # for i in range(len(t)):
+    #     if t[i] < 1:
+    #         print("i", i , t[i], '< 1')
+    #         break
 
-    t = []
-    for xs in XS:
-        t.append(sum([xs[i] * res[i] for i in range(V_NUM)]))
-    for i in range(len(t)):
-        if t[i] < 1:
-            print(t[i], '< 1')
-            break
-
+    # C 为问题的解
+    # 用舍入法进行求解
     C = []
     union_C = []
-    for i in range(len(res)):
-        if res[i] >= max_f:
+    for i in range(len(result)):
+        if result[i] >= max_f:
             C.append(F[i])
             union_C.extend(F[i])
-    # print(len(C))
+
+    print(C)
     print(len(set(union_C)))
-    # print(set(union_C) == set(U))
 
 
 if __name__ == "__main__":
     # 4.1 实现基于贪心策略的近似算法
     # 4.2 实现一个基于线性规划的近似算法
-    # 4.3 测试算法的性能
+    # 4.3 测试算法的性能 100,1000,5000
     # LP()
-    # gene_data()
-    greed_covers()
+    # greedy_covers()
+    nums = [100, 1000, 5000]
+    time_record_greedy = []
+    time_record_LP = []
+    for num in nums:
+        U,F = gene_data(num)
+        time_greedy_start = time.time()
+        greedy_covers(U,F)
+        time_greedy_end = time.time()
+        time_greedy = time_greedy_end - time_greedy_start
+
+        time_LP_start = time.time()
+        LP(U,F)
+        time_LP_end = time.time()
+        time_LP = time_LP_end - time_LP_start
+
+        time_record_greedy.append(time_greedy)
+        time_record_LP.append(time_LP)
+
+    plt.plot(nums, time_record_greedy, c="red",label="greedy")
+    plt.plot(nums, time_record_LP, c="yellow",label="LP")
+    plt.legend(loc="upper left")
+    plt.xlabel("data size")
+    plt.ylabel("time")
+    plt.show()

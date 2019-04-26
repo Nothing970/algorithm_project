@@ -33,7 +33,7 @@ if __name__ == "__main__":
     time_end_1 = time.time()
     print("(1)time cost:", time_end_1-time_start_1)
 
-    # （2）输入为1000000个1，记录算法的运行表现
+    # （2）输入为1000000个1，记录算法的运行表现  大概需要27个小时
     # input_2 = [1 for i in range(1000000)]
     # time_start_2 = time.time()
     # QuickSort(input_2, 0, len(input_2)-1)
@@ -61,6 +61,7 @@ if __name__ == "__main__":
             print("(4)time cost(amount:%d percent:%d):" % (amount, percent), time_end_4 - time_start_4)
 
     # （5）（选做）调用自带的快速排序算法
+    print("#################")
     input_1 = [random.randint(0, int(10E32) - 1) for i in range(1000000)]
     time_start_1 = time.time()
     input_1.sort()
@@ -79,7 +80,7 @@ if __name__ == "__main__":
         time_start_3 = time.time()
         input_3.sort()
         time_end_3 = time.time()
-        print("(3)time cost(percent:%d\):"%percent,time_end_3-time_start_3)
+        print("(3)time cost(percent:%d):"%percent,time_end_3-time_start_3)
 
     for amount in [1000,5000]:
         for percent in [50, 60, 70, 80, 90, 100]:
@@ -88,7 +89,7 @@ if __name__ == "__main__":
             time_start_4 = time.time()
             input_4.sort()
             time_end_4 = time.time()
-            print("(4)time cost(amount:%d percent:%d\):" % (amount, percent), time_end_4 - time_start_4)
+            print("(4)time cost(amount:%d percent:%d):" % (amount, percent), time_end_4 - time_start_4)
 
 
 

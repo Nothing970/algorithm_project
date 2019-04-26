@@ -3,7 +3,7 @@ import math
 import matplotlib.pyplot as plt
 import time
 import sys
-sys.setrecursionlimit(2000000)
+sys.setrecursionlimit(20000)
 
 
 # 产生坐标0-10的随机点n个
@@ -321,7 +321,7 @@ if __name__ == "__main__":
     # 4.3 实现基于分治思想的凸包求解算法
     # 4.4 长为100正方形，点数大小分别为1000，2000，3000 的数据集合，记录时间，绘制性能曲线
 
-    # Q = generate_point_set(50)
+    # Q = generate_point_set(40)
     # # Q = [[98, 10], [30, 20], [9, 38], [15, 33], [57, 61], [67, 72], [39, 42], [71, 1], [59, 66], [88, 60], [88, 35], [52, 17], [70, 100], [54, 8], [82, 40], [36, 45], [46, 82], [19, 69], [47, 13], [96, 46], [47, 32], [28, 53], [30, 60], [12, 47], [75, 75], [32, 1], [82, 1], [84, 29], [2, 61], [78, 19], [50, 31], [29, 33], [94, 55], [34, 77], [84, 87], [13, 48], [54, 2], [42, 99], [5, 43], [60, 86]]
     # # Q = [[9, 38], [15, 33], [19, 69], [28, 53], [12, 47], [2, 61], [13, 48], [5, 43]]
     # # Q = [[9, 38], [12, 47], [2, 61], [5, 43]]
@@ -344,30 +344,41 @@ if __name__ == "__main__":
     # plt.plot(x,y)
     # plt.show()
 
-    point_nums = [100,200,300]
-    time_records = []
+    point_nums = [1000,2000,3000]
+    time_record_brute = []
+    time_record_GrahamScan = []
+    time_record_convex = []
+
     for point_num in point_nums:
         Q = generate_point_set(point_num)
-        time_brute_start = time.time()
-        P = brute_force(Q)
-        time_brute_end = time.time()
-        time_brute = time_brute_end - time_brute_start
+        # time_brute_start = time.time()
+        # P = brute_force(Q)
+        # time_brute_end = time.time()
+        # time_brute = time_brute_end - time_brute_start
 
         time_scan_start = time.time()
         P = GrahamScan(Q)
         time_scan_end = time.time()
         time_scan = time_scan_end - time_scan_start
 
-        time_convex_start = time.time()
-        P = ConvexHull(Q)
-        time_convex_end = time.time()
-        time_convex = time_convex_end - time_convex_start
+        # time_convex_start = time.time()
+        # P = ConvexHull(Q)
+        # time_convex_end = time.time()
+        # time_convex = time_convex_end - time_convex_start
 
-        time_records.append([time_brute, time_scan, time_convex])
+        # time_record_brute.append(time_brute)
+        time_record_GrahamScan.append(time_scan)
+        # time_record_convex.append(time_convex)
 
-    plt.plot(point_nums, time_records[0], c="red")
-    plt.plot(point_nums, time_records[1], c="yellow")
-    plt.plot(point_nums, time_records[2], c="blue")
+    # print(time_record_brute)
+    print(time_record_GrahamScan)
+    # print(time_record_convex)
+    # plt.plot(point_nums, time_record_brute, c="red", label="BruteForce")
+    plt.plot(point_nums, time_record_GrahamScan, c="green", label="GrahamScan")
+    # plt.plot(point_nums, time_record_convex, c="blue", label="DevideConquer")
+    plt.legend(loc="upper left")
+    plt.xlabel("data size")
+    plt.ylabel("time")
     plt.show()
 
 
